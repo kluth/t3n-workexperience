@@ -3,7 +3,7 @@ export interface Store {
 }
 
 const store: Store = {
-  user: 'unknown user',
+  user: 'du',
 };
 
 export default store;
