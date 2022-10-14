@@ -1,8 +1,8 @@
 import { ApolloServer } from 'apollo-server';
 import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 
-import typeDefs from './typeDefs';
 import resolvers from './resolvers';
+import typeDefs from './typeDefs';
 
 const server = new ApolloServer({
   typeDefs,

@@ -11,6 +11,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.0",
     "@t3n/components": "^0.7.17",
+    "@t3n/icons": "^0.7.2",
     "@t3n/theme": "^0.7.3",
     "graphql": "^16.6.0",
     "next": "12.3.1",

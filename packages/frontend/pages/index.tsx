@@ -3,27 +3,41 @@ import { gql } from '@apollo/client';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 
-import { Content, Heading } from '@t3n/components';
+import {
+  Box,
+  Button,
+  Grid,
+  GridItem,
+  Heading,
+  NewsCard,
+} from '@t3n/components';
 
 import apolloClient from '../lib/client';
+import { Article } from '../types/def';
 
 const Home: NextPage = () => {
-  const [greeting, setGreeting] = useState('');
+  const [news, setNews] = useState<Article[]>([]);
+  const [bookmarks, setBookmarks] = useState<Article[]>([]);
+  const fetchNews = async () => {
+    const result = await apolloClient.query({
+      query: gql`
+        {
+          news {
+            identifier
+            title
+            teaser
+            authorName
+            imageUrl
+            date
+          }
+        }
+      `,
+    });
+    setNews(result.data.news);
+  };
 
   useEffect(() => {
-    const fetchGreeting = async () => {
-      const { data } = await apolloClient.query<{ greet: string }>({
-        query: gql`
-          query {
-            greet
-          }
-        `,
-      });
-
-      setGreeting(data.greet);
-    };
-
-    fetchGreeting();
+    fetchNews();
   }, []);
 
   return (
@@ -34,9 +48,76 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Content>
-          <Heading>{greeting}</Heading>
-        </Content>
+        <Heading>News @t3n</Heading>
+        <Box>
+          <Grid>
+            {news.map((n: Article) => (
+              <GridItem key={n?.identifier} width={1 / 3}>
+                <Button
+                  size="small"
+                  variant="primary"
+                  onClick={() => {
+                    if (!bookmarks.includes(n)) {
+                      setBookmarks([...bookmarks, n]);
+                      setNews(news.filter((item) => item !== n));
+                    }
+                  }}
+                >
+                  <NewsCard
+                    news={{
+                      title: n?.title,
+                      author: {
+                        name: n?.authorName,
+                        avatar: 'https://picsum.photos/64',
+                      },
+                      imageUrl: n?.imageUrl,
+                      type: 'News',
+                      url: n?.url,
+                      publishedAt: new Date(n?.date),
+                    }}
+                    type="HERO"
+                    loading={false}
+                    key={`article-${n?.identifier}`}
+                  />
+                </Button>
+              </GridItem>
+            ))}
+            <GridItem width={1}>
+              <Heading>Bookmarked</Heading>
+            </GridItem>
+            {bookmarks.map((n: Article) => (
+              <GridItem key={n?.identifier} width={1 / 3}>
+                <Button
+                  size="small"
+                  variant="primary"
+                  onClick={() => {
+                    if (bookmarks.includes(n)) {
+                      setBookmarks(bookmarks.filter((b) => b !== n));
+                      setNews([...news, n]);
+                    }
+                  }}
+                >
+                  <NewsCard
+                    news={{
+                      title: n?.title,
+                      author: {
+                        name: n?.authorName,
+                        avatar: 'https://picsum.photos/64',
+                      },
+                      imageUrl: n?.imageUrl,
+                      type: 'News',
+                      url: n?.url,
+                      publishedAt: new Date(n?.date),
+                    }}
+                    type="HERO"
+                    loading={false}
+                    key={`article-${n?.identifier}`}
+                  />
+                </Button>
+              </GridItem>
+            ))}
+          </Grid>
+        </Box>
       </main>
     </div>
   );

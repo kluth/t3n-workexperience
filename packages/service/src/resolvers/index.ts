@@ -7,6 +7,7 @@ interface SetUserMutationInputArgs {
 const resolvers = {
   Query: {
     greet: () => `Hey ${store.user} 👋`,
+    news: () => store.news,
   },
   Mutation: {
     setUser: (parent: any, args: SetUserMutationInputArgs) => {
